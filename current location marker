@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie-edge">
+    <title>Geolocation example - getCurrentPosition()</title>
+    <title>My Google Map</title>
+    <style>
+        #map{
+            height: 400px;
+            width:100%;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+        function success({ coords, timestamp }) {
+            const latitude = coords.latitude;   // 위도
+            const longitude = coords.longitude; // 경도
+            
+            alert(`위도: ${latitude}, 경도: ${longitude}, 위치 반환 시간: ${timestamp}`);
+            return [latitude, longitude];
+        }
+
+        function getUserLocation() {
+            if (!navigator.geolocation) {
+                throw "위치 정보가 지원되지 않습니다.";
+            }
+            navigator.geolocation.watchPosition();
+        }
+
+        
+        function initMap(){
+            getUserLocation()
+            //map optiosn
+            var options = {
+                zoom:10,
+                center: {lat: 35.6762, lng:139.6503}
+            }
+            //new map
+            var map= new google.maps.Map(document.getElementById('map'), options);
+/*
+            //add marker
+            var marker = new google.maps.Marker({map,draggable: true,
+                animation: google.maps.Animation.DROP,
+                position:{lat:35.6938, lng: 139.7034},
+                map:map // insert this marker into the map
+            });
+
+            var infoWindow = new google.maps.InfoWindow ({
+                content: '<h2> Shinjuku </h2>'
+            });
+
+            marker.addListener('click', function(){
+                infoWindow.open(map, marker);
+            });
+            */
+
+            var markers = [
+                {
+                    coords:{lat: 35.6762, lng:139.6503}, content: '<h2>Shinjuku</h2>'// iconImage: ''
+                },
+                {
+                    coords:{lat: 35.7626, lng:139.6286}, content: '<h2>Hikarigaoka</h2>'
+                },
+                {
+                    coords:{lat: latitude, lng: longitude}, content: '<h2>Your current location</h2>'
+                }
+            ];
+
+            //Lopp through markers
+            for(var i=0;i<markers.length;i++){
+                addMarker(markers[i]);
+            }
+           //add marker function
+           function addMarker(props){
+            var marker = new google.maps.Marker({map,draggable: true,
+                animation: google.maps.Animation.DROP,
+                position:props.coords,
+                map:map // insert this marker into the map
+  
+            });
+            if(props.content){
+                var infoWindow = new google.maps.InfoWindow ({
+                content: props.content
+            });
+
+            marker.addListener('click', function(){
+                infoWindow.open(map, marker);
+            });
+            }
+            
+
+           }
+        }
+        // Draw a line showing the straight distance between the markers
+            var line = new google.maps.Polyline({path: [Shinjuku, Hikarigaoka], map: map});
+
+
+
+    </script>
+    <script async
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8_OUxxHuvSX0nDOuOFq8b6IrsiHLXkZU&callback=initMap">
+    </script>
+  </body>
+</html>
